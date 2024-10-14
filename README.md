@@ -1,6 +1,4 @@
-# Standard Project Template by DataDrooler Community
-
-A template for code documentation and readability
+# A project on lung cancer detection using ML
 
 ## Repository Structure
 
@@ -24,21 +22,9 @@ A template for code documentation and readability
 
 ## Purpose
 
-This repository serves as a standard template for organizing data science and machine learning projects. It provides a structured layout to enhance collaboration, reproducibility, and project management.
-
-## Usage
-
-1. Fork or Clone this repository to start a new project.
-2. Update `abstract.md` with your project's overview.
-3. Store your datasets in the `data/` directory.
-4. Keep all documentation in the `docs/` folder.
-5. Place your code in the `src/` directory.
-6. Update this README with project-specific information and visuals.
+This projects serves as a ML model to accurately detect the possibility of the lung cancer of any given patient.
 
 ## Contributing
 
-This template is maintained by DataDrooler.com 
 For suggestions or improvements, please open an issue or submit a pull request.
 
----
-Created by www.datadrooler.com | Last Updated: October 2024
