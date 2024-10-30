@@ -1,0 +1,20 @@
+# Requirements for the Flask application and TensorFlow model
+
+# TensorFlow version to load and use the model
+tensorflow==2.11.0
+
+# Flask for creating a web interface
+flask==2.2.2
+
+# NumPy for numerical operations
+numpy==1.23.1
+
+# Pillow for image processing tasks (e.g., loading and preprocessing images)
+Pillow==9.2.0
+
+# Matplotlib for visualizing predictions and results
+matplotlib==3.5.1
+
+# Add any additional libraries you may need for your project below:
+# e.g., scikit-learn==1.1.2
+# e.g., opencv-python==4.5.5.62
