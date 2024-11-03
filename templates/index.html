@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lung Cancer Classification System</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <style>
+        body {
+            background-color: #f5f5f5;
+        }
+        .container {
+            padding: 2rem;
+            max-width: 1200px;
+        }
+        .upload-box {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .preview-image {
+            max-width: 100%;
+            margin-top: 1rem;
+            border-radius: 4px;
+        }
+        .select-button {
+            background-color: #00d1b2 !important;
+            color: white !important;
+        }
+        .reset-button {
+            background-color: #ffdd57 !important;
+        }
+        #analysisComplete {
+            display: none;
+        }
+    </style>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title is-2 has-text-centered mb-6">Lung Cancer Classification System</h1>
+        
+        <div class="columns">
+            <div class="column is-half">
+                <div class="upload-box">
+                    <h2 id="analysisComplete" class="title is-4">Analysis complete!</h2>
+                    
+                    <div class="buttons">
+                        <button class="button select-button" onclick="document.getElementById('fileInput').click()">
+                            ⬆ Upload Image
+                        </button>
+                        <button class="button reset-button" onclick="resetForm()">
+                            ↺ Reset
+                        </button>
+                    </div>
+
+                    <input id="fileInput" type="file" accept="image/*" style="display: none" onchange="handleImageUpload(this)">
+                    
+                    <div id="imagePreview" class="mt-4">
+                        <p class="subtitle is-6">Uploaded Image</p>
+                        <img id="preview" class="preview-image" style="display: none">
+                    </div>
+                </div>
+            </div>
+
+            <div class="column is-half">
+                <div id="resultSection" class="upload-box" style="display: none">
+                    <h2 class="title is-4">Prediction Results</h2>
+                    
+                    <div class="field">
+                        <label class="label">Predicted Class:</label>
+                        <p id="predictedClass" class="is-size-5"></p>
+                    </div>
+
+                    <div class="field">
+                        <label class="label">Confidence:</label>
+                        <p id="confidence" class="is-size-5"></p>
+                    </div>
+
+                    <div class="field">
+                        <label class="label">Detailed Probabilities:</label>
+                        <div id="chart"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function handleImageUpload(input) {
+            const preview = document.getElementById('preview');
+            const resultSection = document.getElementById('resultSection');
+            const analysisComplete = document.getElementById('analysisComplete');
+            
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                    analysisComplete.style.display = 'block'; // Show analysis complete text
+                    
+                    // Submit for prediction
+                    submitPrediction(input.files[0]);
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function resetForm() {
+            document.getElementById('fileInput').value = '';
+            document.getElementById('preview').style.display = 'none';
+            document.getElementById('resultSection').style.display = 'none';
+            document.getElementById('analysisComplete').style.display = 'none'; // Hide analysis complete text
+        }
+
+        function createBarChart(probabilities) {
+            const data = [{
+                type: 'bar',
+                x: Object.keys(probabilities),
+                y: Object.values(probabilities).map(p => p * 100),
+                marker: {
+                    color: ['blue', 'blue', 'blue', 'red']
+                }
+            }];
+
+            const layout = {
+                title: 'Prediction Probabilities',
+                yaxis: {
+                    title: 'Probability (%)',
+                    range: [0, 100]
+                },
+                margin: {
+                    l: 50,
+                    r: 50,
+                    t: 50,
+                    b: 100
+                }
+            };
+
+            Plotly.newPlot('chart', data, layout);
+        }
+
+        function submitPrediction(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            fetch('/predict', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('resultSection').style.display = 'block';
+                document.getElementById('predictedClass').textContent = data.class_name;
+                document.getElementById('confidence').textContent = (data.confidence * 100).toFixed(2) + '%';
+                createBarChart(data.probabilities);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred during prediction');
+            });
+        }
+    </script>
+</body>
+</html>
